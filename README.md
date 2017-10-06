@@ -2,7 +2,7 @@
 
 ## Newrelic Insights example
 
-![Insights example]("https://www.screencast.com/t/I0FItB19")
+<img src="newrelic-insights-example.jpg" align="center" />
 
 ## Test with kong-vagrant VM
 
