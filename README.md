@@ -1,5 +1,8 @@
 # Kong Newrelic-insights plugin
 
+Careful this actual version of the plugin is currently forwarding to NewRelic NOT using SSL.
+Will be upgraded soon.
+
 ## Newrelic Insights example
 
 <img src="newrelic-insights-example.jpg" align="center" />
@@ -26,3 +29,7 @@ Easy commands to test the plugin
     curl -i -X POST   --url http://localhost:8001/apis/mockbin/plugins/   --data 'name=newrelic-insights' --data 'config.api_key=YOUR-NEWRELIC-API-KEY' --data 'config.account_id=YOUR-NEWRELIC-ACCOUNT-ID'
     curl "0.0.0.0:8000/mockbin?yeah=baby" --data '{"someVariables": "une value"}'
     curl -i -X DELETE   --url http://localhost:8001/apis/mockbin
+    
+# Ready for luarocks deployment 
+    
+   https://luarocks.org/modules/JnMik/kong-plugin-newrelic-insights
