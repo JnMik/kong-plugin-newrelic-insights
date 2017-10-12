@@ -30,3 +30,8 @@ Easy commands to test the plugin
 # Ready for luarocks deployment 
     
    https://luarocks.org/modules/JnMik/kong-plugin-newrelic-insights
+   
+# To install in Kong while running in Docker Container
+
+    Install unzip in container during image build time (yum install -y unzip)
+    Then go inside /usr/local/share/lua/5.1/kong and run luarocks install kong-plugin-newrelic-insights

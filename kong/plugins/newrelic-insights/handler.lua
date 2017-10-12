@@ -1,9 +1,9 @@
 -- load the base plugin object and create a subclass
 local plugin = require("kong.plugins.base_plugin"):extend()
 
--- local debug = require "kong.plugins.newrelic-insights.tool.debug"
+-- local debug = require "kong.plugins.newrelic-insights.debug"
 local http = require "resty.http"
-local JSON = require "kong.plugins.newrelic-insights.tool.json"
+local JSON = require "kong.plugins.newrelic-insights.json"
 local basic_serializer = require "kong.plugins.log-serializers.basic"
 
 -- constructor
