@@ -56,6 +56,10 @@ function plugin:access(plugin_conf)
     params[key] = value
   end
 
+  if plugin_conf.environment_name ~= nil then
+    params['environment_name'] = plugin_conf.environment_name
+  end
+
   if ngx.ctx.authenticated_consumer == nil then
     params['authenticated_user'] = "NOT AUTHENTICATED";
   else

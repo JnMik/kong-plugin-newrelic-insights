@@ -23,7 +23,7 @@ Easy commands to test the plugin
     kong migrations up
     kong start
     curl -i -X POST   --url http://localhost:8001/apis/   --data 'name=mockbin'   --data 'upstream_url=http://mockbin.org/request'   --data 'uris=/mockbin'
-    curl -i -X POST   --url http://localhost:8001/apis/mockbin/plugins/   --data 'name=newrelic-insights' --data 'config.api_key=YOUR-NEWRELIC-API-KEY' --data 'config.account_id=YOUR-NEWRELIC-ACCOUNT-ID'
+    curl -i -X POST   --url http://localhost:8001/apis/mockbin/plugins/   --data 'name=newrelic-insights' --data 'config.api_key=YOUR-NEWRELIC-API-KEY' --data 'config.account_id=YOUR-NEWRELIC-ACCOUNT-ID' --data 'config.environment_name=dev'
     curl "0.0.0.0:8000/mockbin?yeah=baby" --data '{"someVariables": "une value"}'
     curl -i -X DELETE   --url http://localhost:8001/apis/mockbin
     
