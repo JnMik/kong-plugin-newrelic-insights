@@ -1,8 +1,5 @@
 # Kong Newrelic-insights plugin
 
-Careful this actual version of the plugin is currently forwarding to NewRelic NOT using SSL.
-Will be upgraded soon.
-
 ## Newrelic Insights example
 
 <img src="newrelic-insights-example.jpg" align="center" />

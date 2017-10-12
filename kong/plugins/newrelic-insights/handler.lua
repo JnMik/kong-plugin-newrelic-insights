@@ -1,14 +1,14 @@
 -- load the base plugin object and create a subclass
 local plugin = require("kong.plugins.base_plugin"):extend()
 
--- local debug = require "kong.plugins.newrelic.tool.debug"
+-- local debug = require "kong.plugins.newrelic-insights.tool.debug"
 local http = require "resty.http"
 local JSON = require "kong.plugins.newrelic-insights.tool.json"
 local basic_serializer = require "kong.plugins.log-serializers.basic"
 
 -- constructor
 function plugin:new()
-  plugin.super.new(self, "newrelic-insights")  --TODO: change "myPlugin" to the name of the plugin here
+  plugin.super.new(self, "newrelic-insights")
 end
 
 ---[[ runs in the 'access_by_lua_block'
@@ -63,15 +63,34 @@ function plugin:access(plugin_conf)
   end
 
   if plugin_conf.account_id ~= nil and plugin_conf.api_key ~= nil then
-    -- TODO Should be https, but its way more complicated to setup SSL certificates
-    local res, err = client:request_uri("http://insights-collector.newrelic.com/v1/accounts/" .. plugin_conf.account_id .. "/events",  {
-      method = "POST",
-      body = JSON.stringify(params),
-      headers = {
-        ["Content-Type"] = "application/json",
-        ["X-Insert-Key"] = plugin_conf.api_key
+
+    client:set_timeout(30000)
+
+    local ok, err = client:connect("insights-collector.newrelic.com", 443);
+    if not ok then
+      ngx.log(ngx.STDERR, "Could not connect to newrelic insights API", err);
+    else
+
+      local ok, err = client:ssl_handshake(false, "insights-collector.newrelic.com", false)
+      if not ok then
+        ngx.log(ngx.STDERR, "Could not perform SSL handshake with Newrelic Insight", err);
+        return
+      end
+
+      local res, err = client:request {
+        method = "POST",
+        path = "/v1/accounts/" .. plugin_conf.account_id .. "/events",
+        body = JSON.stringify(params),
+        headers = {
+          ["Content-Type"] = "application/json",
+          ["X-Insert-Key"] = plugin_conf.api_key
+        }
       }
-    })
+
+      if not res then
+        ngx.log(ngx.STDERR, "Could not send http logs to Newrelic Insights", err);
+      end
+    end
   end
 
 end
