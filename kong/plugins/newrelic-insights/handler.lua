@@ -53,7 +53,10 @@ function plugin:access(plugin_conf)
 
   -- Add querystring variables as data column
   for key,value in pairs(requestEnvelop.request.querystring) do
-    params[key] = value
+    -- Don't record the api_key in newrelic_insights
+    if(key ~= 'api_key') then
+      params[key] = value;
+    end
   end
 
   if plugin_conf.environment_name ~= nil then
@@ -63,7 +66,7 @@ function plugin:access(plugin_conf)
   if ngx.ctx.authenticated_consumer == nil then
     params['authenticated_user'] = "NOT AUTHENTICATED";
   else
-    params['authenticated_user'] = ngx.ctx.authenticated_consumer;
+    params['authenticated_user'] = ngx.ctx.authenticated_credential.username;
   end
 
   if plugin_conf.account_id ~= nil and plugin_conf.api_key ~= nil then
