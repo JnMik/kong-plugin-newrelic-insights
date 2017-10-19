@@ -22,10 +22,22 @@ Easy commands to test the plugin
 
     kong migrations up
     kong start
+    
+    Test the plugin not authentified
     curl -i -X POST   --url http://localhost:8001/apis/   --data 'name=mockbin'   --data 'upstream_url=http://mockbin.org/request'   --data 'uris=/mockbin'
     curl -i -X POST   --url http://localhost:8001/apis/mockbin/plugins/   --data 'name=newrelic-insights' --data 'config.api_key=YOUR-NEWRELIC-API-KEY' --data 'config.account_id=YOUR-NEWRELIC-ACCOUNT-ID' --data 'config.environment_name=dev'
-    curl "0.0.0.0:8000/mockbin?yeah=baby" --data '{"someVariables": "une value"}'
+    curl "0.0.0.0:8000/mockbin?yeah=baby" --data '{"someVariables": "some value"}'
+   
+    
+    Test the plugin authentified
+    curl -i -X POST   --url http://localhost:8001/consumers/   --data 'username=testconsumer'
+    curl -i -X POST   --url http://localhost:8001/apis/mockbin/plugins/   --data 'name=key-auth' --data 'config.key_names=api_key'
+    curl -i -X POST   --url http://localhost:8001/consumers/testconsumer/key-auth --data 'key=test123'
+    curl "0.0.0.0:8000/mockbin?yeah=baby&api_key=test123" --data '{"someVariables": "some value"}'
+    
+    Restart your tests
     curl -i -X DELETE   --url http://localhost:8001/apis/mockbin
+    curl -i -X DELETE   --url http://localhost:8001/consumers/testconsumer
     
 # Ready for luarocks deployment 
     

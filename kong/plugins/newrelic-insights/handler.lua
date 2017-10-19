@@ -1,10 +1,12 @@
 -- load the base plugin object and create a subclass
 local plugin = require("kong.plugins.base_plugin"):extend()
 
--- local debug = require "kong.plugins.newrelic-insights.debug"
+local debug = require "kong.plugins.newrelic-insights.debug"
 local http = require "resty.http"
 local JSON = require "kong.plugins.newrelic-insights.json"
 local basic_serializer = require "kong.plugins.log-serializers.basic"
+local body_data;
+local authenticated_consumer;
 
 -- constructor
 function plugin:new()
@@ -15,13 +17,25 @@ end
 function plugin:access(plugin_conf)
   plugin.super.access(self)
 
-  local requestEnvelop = basic_serializer.serialize(ngx)
-  local client = http.new()
-  ngx.req.read_body() -- Populate get_body_data()
+  ngx.req.read_body(); -- Populate get_body_data()
+  -- Fetch body data while API cosockets are enabled
+  plugin.body_data = ngx.req.get_body_data();
 
-  -- debug.log_r("==============================================================");
-  -- debug.log_r(requestEnvelop);
-  -- debug.log_r("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  if ngx.ctx.authenticated_consumer == nil then
+    plugin.authenticated_consumer = "NOT AUTHENTICATED";
+  else
+    plugin.authenticated_consumer = ngx.ctx.authenticated_consumer.username;
+  end
+
+end
+
+local function recordEvent(premature, plugin_conf, requestEnvelop)
+
+  if premature then
+    return
+  end
+
+  local client = http.new()
 
   local params = {
     eventType = "kong_api_gateway_request",
@@ -48,7 +62,8 @@ function plugin:access(plugin_conf)
     response_status = requestEnvelop.response["status"],
     response_size = requestEnvelop.response["size"],
     started_at = requestEnvelop["started_at"],
-    bodyData = ngx.req.get_body_data()
+    body_data = plugin.body_data,
+    authenticated_consumer = plugin.authenticated_consumer
   };
 
   -- Add querystring variables as data column
@@ -63,11 +78,10 @@ function plugin:access(plugin_conf)
     params['environment_name'] = plugin_conf.environment_name
   end
 
-  if ngx.ctx.authenticated_consumer == nil then
-    params['authenticated_user'] = "NOT AUTHENTICATED";
-  else
-    params['authenticated_user'] = ngx.ctx.authenticated_credential.username;
-  end
+  debug.log_r("==============================================================");
+  debug.log_r(params);
+  debug.log_r("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
 
   if plugin_conf.account_id ~= nil and plugin_conf.api_key ~= nil then
 
@@ -102,11 +116,18 @@ function plugin:access(plugin_conf)
 
 end
 
----[[ runs in the 'header_filter_by_lua_block'
-function plugin:header_filter(plugin_conf)
-  plugin.super.access(self)
-end
+function plugin:log(plugin_conf)
+  plugin.super.log(self)
 
+  local requestEnvelop = basic_serializer.serialize(ngx);
+
+  -- trigger logging method with ngx_timer, a workaround to enable API
+  local ok, err = ngx.timer.at(0, recordEvent, plugin_conf, requestEnvelop)
+  if not ok then
+    ngx.log(ngx.STDERR, "Fail to create timer", err);
+  end
+
+end
 
 -- set the plugin priority, which determines plugin execution order
 plugin.PRIORITY = 1000
