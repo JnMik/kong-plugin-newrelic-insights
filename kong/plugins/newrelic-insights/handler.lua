@@ -1,7 +1,7 @@
 -- load the base plugin object and create a subclass
 local plugin = require("kong.plugins.base_plugin"):extend()
 
-local debug = require "kong.plugins.newrelic-insights.debug"
+-- local debug = require "kong.plugins.newrelic-insights.debug"
 local http = require "resty.http"
 local JSON = require "kong.plugins.newrelic-insights.json"
 local basic_serializer = require "kong.plugins.log-serializers.basic"
@@ -78,9 +78,9 @@ local function recordEvent(premature, plugin_conf, requestEnvelop)
     params['environment_name'] = plugin_conf.environment_name
   end
 
-  debug.log_r("==============================================================");
-  debug.log_r(params);
-  debug.log_r("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  -- debug.log_r("==============================================================");
+  -- debug.log_r(params);
+  -- debug.log_r("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 
   if plugin_conf.account_id ~= nil and plugin_conf.api_key ~= nil then
