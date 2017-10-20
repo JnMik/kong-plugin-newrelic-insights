@@ -47,3 +47,10 @@ Easy commands to test the plugin
 
     RUN yum install -y unzip
     RUN cd /usr/local/share/lua/5.1/kong && luarocks install kong-plugin-newrelic-insights
+    
+# Known limitations or bug
+
+    Plugin will try to determine which user is using the api gateway based on the key-auth plugin, and will 
+    look for the "api_key" parameter in query string. Using another auth method than this will record
+    events with "NOT AUTHENTICATED" value in the authenticated_consumers column. This should be improve eventually. 
+    You are welcome to open a PR to fix this limitation if it's a concern for your usage.
