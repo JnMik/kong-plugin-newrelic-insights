@@ -13,8 +13,8 @@ return {
   no_consumer = false, -- this plugin is available on APIs as well as on Consumers,
   fields = {
     -- Describe your plugin's configuration's schema here.
-    api_key = { type = "string", default = {} },
-    account_id = { type = "string", default = {} },
+    api_key = { type = "string", default = "" },
+    account_id = { type = "string", default = "" },
     environment_name = { type = "string", required = false, default = nil }
   },
   -- self_check = function(schema, plugin_t, dao, is_updating)
