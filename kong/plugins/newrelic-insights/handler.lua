@@ -87,12 +87,12 @@ local function recordEvent(premature, plugin_conf, requestEnvelop)
 
     client:set_timeout(30000)
 
-    local ok, err = client:connect("insights-collector.newrelic.com", 443);
+    local ok, err = client:connect(plugin_conf.api_endpoint, 443);
     if not ok then
       ngx.log(ngx.STDERR, "Could not connect to newrelic insights API", err);
     else
 
-      local ok, err = client:ssl_handshake(false, "insights-collector.newrelic.com", false)
+      local ok, err = client:ssl_handshake(false, plugin_conf.api_endpoint, false)
       if not ok then
         ngx.log(ngx.STDERR, "Could not perform SSL handshake with Newrelic Insight", err);
         return

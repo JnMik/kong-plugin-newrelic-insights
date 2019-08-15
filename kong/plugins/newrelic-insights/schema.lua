@@ -15,7 +15,8 @@ return {
     -- Describe your plugin's configuration's schema here.
     api_key = { type = "string", default = "" },
     account_id = { type = "string", default = "" },
-    environment_name = { type = "string", required = false, default = nil }
+    environment_name = { type = "string", required = false, default = nil },
+    api_endpoint = { type = "string", required = true, default = "insights-collector.newrelic.com" }
   },
   -- self_check = function(schema, plugin_t, dao, is_updating)
   --   -- perform any custom verification
