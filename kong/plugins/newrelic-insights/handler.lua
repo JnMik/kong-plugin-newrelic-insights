@@ -48,14 +48,11 @@ local function recordEvent(premature, plugin_conf, requestEnvelop)
     request_route =  requestEnvelop.request["request_uri"],
     request_size =  requestEnvelop.request["size"],
     client_ip =  requestEnvelop["client_ip"],
-    config_api_name = requestEnvelop.api["name"],
-    config_api_https_only = requestEnvelop.api["https_only"],
-    config_api_preserve_host = requestEnvelop.api["preserve_host"],
-    config_api_upstream_connect_timeout = requestEnvelop.api["upstream_connect_timeout"],
-    config_api_upstream_read_timeout = requestEnvelop.api["api_upstream_read_timeout"],
-    config_api_upstream_send_timeout = requestEnvelop.api["api_upstream_send_timeout"],
-    config_api_strip_uri = requestEnvelop.api["strip_uri"],
-    config_api_upstream_url = requestEnvelop.api["upstream_url"],
+    config_route_name = requestEnvelop.route["name"],
+    config_route_protocols = requestEnvelop.route["protocols"],
+    config_route_preserve_host = requestEnvelop.route["preserve_host"],
+    config_route_strip_path = requestEnvelop.route["strip_path"],
+    config_service_upstream_id = requestEnvelop.service["id"],
     latencies_request = requestEnvelop.latencies["request"],
     latencies_kong = requestEnvelop.latencies["kong"],
     latencies_proxy = requestEnvelop.latencies["proxy"],
@@ -87,14 +84,14 @@ local function recordEvent(premature, plugin_conf, requestEnvelop)
 
     client:set_timeout(30000)
 
-    local ok, err = client:connect(plugin_conf.api_endpoint, 443);
+    local ok, err = client:connect(plugin_conf.api_endpoint_hostname, 443);
     if not ok then
-      ngx.log(ngx.STDERR, "Could not connect to newrelic insights API", err);
+      ngx.log(ngx.STDERR, "Could not connect to newrelic insights API at host " .. plugin_conf.api_endpoint_hostname, err);
     else
 
-      local ok, err = client:ssl_handshake(false, plugin_conf.api_endpoint, false)
+      local ok, err = client:ssl_handshake(false, plugin_conf.api_endpoint_hostname, false)
       if not ok then
-        ngx.log(ngx.STDERR, "Could not perform SSL handshake with Newrelic Insight", err);
+        ngx.log(ngx.STDERR, "Could not perform SSL handshake with Newrelic Insight at host " .. plugin_conf.api_endpoint_hostname, err);
         return
       end
 
